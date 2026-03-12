@@ -5,5 +5,5 @@ This requires the MinGW version of **CodeBlocks 20.03 or newer** to be installed
 
 ## How to use this:
 
-## This program is based on the LVGL V8.4. 
+## This program is based on the LVGL V8.3. 
 
