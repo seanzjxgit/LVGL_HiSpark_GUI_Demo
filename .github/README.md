@@ -1,11 +1,11 @@
-# pc_simulator_win_codeblocks
-PC simulator project for LittlevGL embedded GUI Library for Windows in Codeblocks
+# LVGL_HiSpark_GUI_Demo
+This is a project designed for HiSpark.Now ,it is focused on its GUI design works.
 
-This requires the MinGW version of **CodeBlocks 20.03 or newer** to be installed.
 
 ## How to use this:
 
 It is recommended to run on the x86 windows 11 operating system, using CodeBlocks.
+This requires the MinGW version of **CodeBlocks 20.03 or newer** to be installed.
 
 ### Here are some tips for using this project:
 1 Dowmload the Zip on your machine.
