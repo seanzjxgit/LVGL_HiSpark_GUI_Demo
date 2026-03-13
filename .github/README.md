@@ -1,5 +1,5 @@
 # LVGL_HiSpark_GUI_Demo
-This is a project designed for HiSpark.Now ,it is focused on its GUI design works.
+This is a project designed for HiSpark project . Now ,it is focused on its GUI design works.
 
 
 ## How to use this:
