@@ -7,7 +7,7 @@ This is a project designed for HiSpark.Now ,it is focused on its GUI design work
 It is recommended to run on the x86 windows 11 operating system, using CodeBlocks.
 This requires the MinGW version of **CodeBlocks 20.03 or newer** to be installed.
 
-**Warning:** For the use of the simulator designed for Windows 10 or 11, It may not be able to run diirectly on the Debian , Ubuntu or Arch Linux. But your can take an attempt to use other simulators and copy the folder named lv_mainstart into your project.Remember to check your trail and use lv_mainstart.c and lv_mainstart.h in main.c .
+**Warning:** For the use of the simulator designed for Windows 10 or 11, It may not be able to run diirectly on the Debian , Ubuntu or Arch Linux. But your can take an attempt to use other simulators and copy the folder named lv_mainstart into your project.Remember to check your path and use lv_mainstart.c and lv_mainstart.h in main.c .
 
 ### Here are some tips for using this project:
 1 Dowmload the Zip on your machine.
