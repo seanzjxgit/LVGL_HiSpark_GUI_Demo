@@ -1,53 +1,49 @@
-# Prerequisites
-*.d
+# =========================
+# 1. 编译输出（核心）
+# =========================
+/bin/
+/obj/
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# 你的项目实际路径
+/bin/Debug/
+/obj/Debug/
 
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
+# =========================
+# 2. 可执行 & 中间文件
+# =========================
 *.exe
-*.out
-*.app
-*.i*86
-*.x86_64
+*.o
+*.obj
+*.dll
+*.a
+*.lib
+
+# =========================
+# 3. Code::Blocks 文件
+# =========================
+
+# 项目用户配置（忽略）
+*.layout
+
+# 编译缓存
+*.depend
+
+# =========================
+# 4. 日志 / 临时文件
+# =========================
+*.log
+*.tmp
+
+# =========================
+# 5. 系统垃圾
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# 6. 嵌入式常见产物（可选）
+# =========================
+*.elf
+*.map
+*.bin
 *.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-/*.depend
