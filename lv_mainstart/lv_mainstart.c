@@ -1,12 +1,7 @@
 #include "lv_mainstart.h"
 #include "lvgl.h"
 
-/* 320×240 适配说明：
- * 原 800×480 → 320×240，缩放比约 0.40×0.50
- * 字体降级：34→18, 32→16, 28→14, 24→14, 20→12, 18→12
- * 卡片/控件尺寸整体缩为原来 40%
- * PPT 控制相关代码已全部注释，保留接口供将来启用
- */
+
 
 #define COLOR_BG_TOP      lv_color_hex(0x7B3FE4)
 #define COLOR_BG_BOT      lv_color_hex(0x00C8FF)
@@ -36,17 +31,17 @@ typedef struct {
     bool           valid;
 } user_card_t;
 
-/* ---- 全局变量 ---- */
-static char     *usr_name;
-static char     *home_time;
-static char     *home_date;
-static uint8_t   batt_pct;
-static char     *position[POSITION_HOME_NUM];
-static char     *meeting_time[MESSAGE_MEETING_NUM];
-static char     *meeting_content[MESSAGE_MEETING_NUM];
-static char     *level_text[3];
-static uint8_t   meeting_level[MESSAGE_MEETING_NUM];
-static uint8_t   meeting_order[MESSAGE_MEETING_NUM];
+
+char     *usr_name        = NULL;
+char     *home_time       = NULL;
+char     *home_date       = NULL;
+uint8_t   batt_pct        = 0;
+char     *position[POSITION_HOME_NUM] = {0};
+char     *meeting_time[MESSAGE_MEETING_NUM]    = {0};
+char     *meeting_content[MESSAGE_MEETING_NUM] = {0};
+char     *level_text[3];
+uint8_t   meeting_level[MESSAGE_MEETING_NUM]   = {0};
+uint8_t   meeting_order[MESSAGE_MEETING_NUM]   = {0};
 static lv_obj_t *meeting_list_obj = NULL;
 static lv_obj_t *card_list_obj    = NULL;
 static uint8_t   meeting_sort_asc = 0;
@@ -56,7 +51,7 @@ static lv_obj_t *sort_priority_btn = NULL;
 static lv_obj_t *sort_time_btn_obj = NULL;
 static user_card_t user_cards[USER_CARD_NUM];
 
-/* PPT 相关变量（注释掉，待启用）
+/* PPT
 static uint16_t ppt_current_page = 1;
 static uint16_t ppt_total_pages  = 20;
 */
@@ -68,8 +63,7 @@ static bool    ctrl_wifi_enabled      = true;
 static uint8_t ctrl_brightness        = 75;
 static uint8_t ctrl_volume            = 50;
 
-/* 硬件接口前向声明
- * PPT 接口（注释掉）：
+/*
  * static void hw_ppt_prev_page(void);
  * static void hw_ppt_next_page(void);
  * void hw_ppt_get_page_info(uint16_t *current, uint16_t *total);
@@ -92,9 +86,7 @@ static const char *page_icons[PAGE_COUNT] = {
     LV_SYMBOL_HOME, LV_SYMBOL_VIDEO, LV_SYMBOL_FILE, LV_SYMBOL_SETTINGS
 };
 
-/* =====================================================================
- * 样式
- * ===================================================================== */
+
 static lv_style_t style_screen_bg;
 static lv_style_t style_page;
 static lv_style_t style_card;
@@ -187,13 +179,10 @@ static lv_obj_t *create_glass_card(lv_obj_t *parent, lv_coord_t w, lv_coord_t h)
     return card;
 }
 
-/* =====================================================================
- * HOME 页  320×240
- * 左侧 头像卡片 110×160，右上 时间卡片 175×68，右下 职务卡片 175×96
- * ===================================================================== */
+
 static void create_home_page(lv_obj_t *parent)
 {
-    /* ---- 头像卡片 ---- */
+
     lv_obj_t *avatar_card = create_glass_card(parent, 110, 160);
     lv_obj_align(avatar_card, LV_ALIGN_LEFT_MID, 6, 0);
 
@@ -235,7 +224,7 @@ static void create_home_page(lv_obj_t *parent)
     lv_obj_set_style_text_color(name_lbl1, COLOR_WHITE, 0);
     lv_obj_center(name_lbl1);
 
-    /* ---- 时间卡片（右上）---- */
+    /* ---- 时锟戒卡片锟斤拷锟斤拷锟较ｏ拷---- */
     lv_obj_t *info_card = create_glass_card(parent, 175, 68);
     lv_obj_align(info_card, LV_ALIGN_TOP_RIGHT, -6, 6);
 
@@ -252,7 +241,7 @@ static void create_home_page(lv_obj_t *parent)
     lv_obj_set_style_text_opa(date_lbl, LV_OPA_60, 0);
     lv_obj_align_to(date_lbl, time_lbl, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 4);
 
-    /* 电池 */
+
     #define BATT_FILL_MAX_W 20
     uint8_t fill_w = (uint8_t)((uint32_t)batt_pct * BATT_FILL_MAX_W / 100);
     if(fill_w < 2) fill_w = 2;
@@ -302,7 +291,7 @@ static void create_home_page(lv_obj_t *parent)
     lv_obj_set_style_text_color(batt_lbl, fill_color, 0);
     lv_obj_align_to(batt_lbl, batt_border, LV_ALIGN_OUT_LEFT_MID, -2, 0);
 
-    /* ---- 职务卡片（右下）---- */
+
     lv_obj_t *pos_card = create_glass_card(parent, 175, 96);
     lv_obj_align(pos_card, LV_ALIGN_BOTTOM_RIGHT, -6, -6);
 
@@ -334,9 +323,7 @@ static void create_home_page(lv_obj_t *parent)
     }
 }
 
-/* =====================================================================
- * Meeting 回调
- * ===================================================================== */
+
 static void level_dropdown_cb(lv_event_t *e)
 {
     lv_obj_t *dd = lv_event_get_target(e);
@@ -424,9 +411,7 @@ static void meeting_refresh_cb(lv_event_t *e)
     rebuild_meeting_list();
 }
 
-/* =====================================================================
- * Meeting 列表重建  每条 50px 高
- * ===================================================================== */
+
 static void rebuild_meeting_list(void)
 {
     if(!meeting_list_obj) return;
@@ -443,7 +428,7 @@ static void rebuild_meeting_list(void)
         lv_obj_set_scrollbar_mode(item, LV_SCROLLBAR_MODE_OFF);
         lv_obj_clear_flag(item, LV_OBJ_FLAG_SCROLLABLE);
 
-        /* 左侧 78% */
+
         lv_obj_t *left = lv_obj_create(item);
         lv_obj_set_size(left, lv_pct(78), lv_pct(100));
         lv_obj_align(left, LV_ALIGN_LEFT_MID, 0, 0);
@@ -482,7 +467,7 @@ static void rebuild_meeting_list(void)
         lv_obj_set_width(cont_lbl, lv_pct(90));
         lv_obj_align_to(cont_lbl, time_lbl, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 3);
 
-        /* 分隔线 */
+
         lv_obj_t *div = lv_obj_create(item);
         lv_obj_set_size(div, 1, lv_pct(70));
         lv_obj_align(div, LV_ALIGN_RIGHT_MID, -lv_pct(22), 0);
@@ -491,7 +476,7 @@ static void rebuild_meeting_list(void)
         lv_obj_set_style_border_width(div, 0, 0);
         lv_obj_clear_flag(div, LV_OBJ_FLAG_CLICKABLE);
 
-        /* 右侧下拉 22% */
+
         lv_obj_t *right = lv_obj_create(item);
         lv_obj_set_size(right, lv_pct(22), lv_pct(100));
         lv_obj_align(right, LV_ALIGN_RIGHT_MID, 0, 0);
@@ -540,7 +525,7 @@ static void create_meeting_page(lv_obj_t *parent)
 {
     for(uint8_t i = 0; i < MESSAGE_MEETING_NUM; i++) meeting_order[i] = i;
 
-    /* 标题卡片 高28 */
+
     lv_obj_t *hdr = create_glass_card(parent, lv_pct(96), 28);
     lv_obj_align(hdr, LV_ALIGN_TOP_MID, 0, 4);
     lv_obj_set_style_pad_hor(hdr, 6, 0);
@@ -552,7 +537,7 @@ static void create_meeting_page(lv_obj_t *parent)
     lv_obj_set_style_text_color(title, COLOR_WHITE, 0);
     lv_obj_align(title, LV_ALIGN_LEFT_MID, 0, 0);
 
-    /* Priority 按钮 */
+
     sort_priority_btn = lv_btn_create(hdr);
     lv_obj_set_size(sort_priority_btn, 60, 20);
     lv_obj_align(sort_priority_btn, LV_ALIGN_RIGHT_MID, -88, 0);
@@ -571,7 +556,7 @@ static void create_meeting_page(lv_obj_t *parent)
     lv_obj_center(slbl);
     lv_obj_add_event_cb(sort_priority_btn, sort_btn_cb, LV_EVENT_CLICKED, NULL);
 
-    /* Time 按钮 */
+
     sort_time_btn_obj = lv_btn_create(hdr);
     lv_obj_set_size(sort_time_btn_obj, 60, 20);
     lv_obj_align(sort_time_btn_obj, LV_ALIGN_RIGHT_MID, -22, 0);
@@ -590,7 +575,7 @@ static void create_meeting_page(lv_obj_t *parent)
     lv_obj_center(tlbl);
     lv_obj_add_event_cb(sort_time_btn_obj, sort_time_btn_cb, LV_EVENT_CLICKED, NULL);
 
-    /* 刷新按钮 */
+
     lv_obj_t *rfr = lv_btn_create(hdr);
     lv_obj_set_size(rfr, 20, 20);
     lv_obj_align(rfr, LV_ALIGN_RIGHT_MID, 0, 0);
@@ -608,7 +593,7 @@ static void create_meeting_page(lv_obj_t *parent)
     lv_obj_center(ri);
     lv_obj_add_event_cb(rfr, meeting_refresh_cb, LV_EVENT_CLICKED, NULL);
 
-    /* 列表 */
+
     lv_obj_t *list = lv_obj_create(parent);
     lv_obj_set_size(list, lv_pct(96), lv_pct(82));
     lv_obj_align(list, LV_ALIGN_BOTTOM_MID, 0, -4);
@@ -667,7 +652,7 @@ static void rebuild_card_list(void)
         lv_obj_set_scrollbar_mode(card, LV_SCROLLBAR_MODE_OFF);
         lv_obj_clear_flag(card, LV_OBJ_FLAG_SCROLLABLE);
 
-        /* 色条 */
+
         lv_obj_t *sb = lv_obj_create(card);
         lv_obj_set_size(sb, 4, ch - 12);
         lv_obj_align(sb, LV_ALIGN_LEFT_MID, -6, 0);
@@ -680,7 +665,7 @@ static void rebuild_card_list(void)
         lv_obj_set_style_shadow_opa(sb, LV_OPA_50, 0);
         lv_obj_clear_flag(sb, LV_OBJ_FLAG_CLICKABLE);
 
-        /* 头像 44px */
+
         lv_obj_t *ac = lv_obj_create(card);
         lv_obj_set_size(ac, 44, 44);
         lv_obj_align(ac, LV_ALIGN_TOP_LEFT, 6, 0);
@@ -703,7 +688,7 @@ static void rebuild_card_list(void)
         lv_img_set_antialias(ai, true);
         lv_obj_center(ai);
 
-        /* 信息区 */
+
         lv_obj_t *info = lv_obj_create(card);
         lv_obj_set_size(info, 170, ch - 12);
         lv_obj_align(info, LV_ALIGN_TOP_LEFT, 58, 0);
@@ -794,7 +779,7 @@ static void create_card_page(lv_obj_t *parent)
 }
 
 /* =====================================================================
- * Controller 页  —  PPT 全部注释，仅保留设置区
+ * Controller 页
  * ===================================================================== */
 static void switch_event_cb(lv_event_t *e)
 {
@@ -831,7 +816,7 @@ static void volume_slider_cb(lv_event_t *e)
     hw_volume_set(ctrl_volume);
 }
 
-/* 开关卡片  118×54 */
+
 static lv_obj_t *create_switch_card(lv_obj_t *parent, const char *icon,
     const char *name, bool init, uint32_t id, lv_color_t col)
 {
@@ -886,7 +871,7 @@ static lv_obj_t *create_switch_card(lv_obj_t *parent, const char *icon,
     return card;
 }
 
-/* 滑块卡片  118×68 */
+
 static lv_obj_t *create_slider_card(lv_obj_t *parent, const char *icon,
     const char *name, uint8_t init_val, lv_event_cb_t cb, lv_color_t col)
 {
@@ -940,7 +925,7 @@ static void create_controller_page(lv_obj_t *parent)
 {
     /*
      * ============================================================
-     * PPT 控制区（注释掉，待硬件接口完成后取消注释）
+     * PPT
      * ============================================================
      *
      * lv_obj_t *ppt_card = create_glass_card(parent, lv_pct(92), 80);
@@ -952,7 +937,7 @@ static void create_controller_page(lv_obj_t *parent)
      * ============================================================
      */
 
-    /* 标题 */
+
     lv_obj_t *tc = create_glass_card(parent, lv_pct(96), 24);
     lv_obj_align(tc, LV_ALIGN_TOP_MID, 0, 4);
     lv_obj_t *tl = lv_label_create(tc);
@@ -961,7 +946,7 @@ static void create_controller_page(lv_obj_t *parent)
     lv_obj_set_style_text_font(tl, &lv_font_montserrat_12, 0);
     lv_obj_center(tl);
 
-    /* 两列卡片容器  252 = 118*2 + 16 */
+    /* 锟斤拷锟叫匡拷片锟斤拷锟斤拷  252 = 118*2 + 16 */
     lv_obj_t *cont = lv_obj_create(parent);
     lv_obj_set_size(cont, 252, 185);
     lv_obj_align(cont, LV_ALIGN_BOTTOM_MID, 0, -4);
@@ -988,9 +973,7 @@ static void create_controller_page(lv_obj_t *parent)
         ctrl_volume,     volume_slider_cb,     lv_color_hex(0x64FFDA));
 }
 
-/* =====================================================================
- * 页面管理
- * ===================================================================== */
+
 typedef void (*page_create_fn)(lv_obj_t *);
 static const page_create_fn page_creators[PAGE_COUNT] = {
     create_home_page,
@@ -1024,18 +1007,15 @@ static void tab_btn_event_cb(lv_event_t *e)
     show_page((uint8_t)idx);
 }
 
-/* =====================================================================
- * 主入口
- * ===================================================================== */
+
 void lv_mainstart(void)
 {
-    /* 数据初始化 */
+
     usr_name  = "User";
     home_time = "12:20";
-    home_date = "2026/01/01 Mon";   /* 精简，适应小屏 */
+    home_date = "2026/01/01 Mon";
     batt_pct  = 70;
 
-    /* 职务缩写，避免截断 */
     position[0] = "CTO";
     position[1] = "VP Engineering";
     position[2] = "Eng Manager";
@@ -1077,7 +1057,7 @@ void lv_mainstart(void)
     user_cards[2].valid = false; user_cards[2].name = "";
     user_cards[2].position_count = 0;
 
-    /* PPT 初始化（注释掉）
+    /* PPT
     ppt_current_page = 1;
     ppt_total_pages  = 20;
     */
@@ -1089,7 +1069,7 @@ void lv_mainstart(void)
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_set_scrollbar_mode(screen, LV_SCROLLBAR_MODE_OFF);
 
-    /* 页面容器：上方 84%  → 320×240 约 202px */
+
     for(uint8_t i = 0; i < PAGE_COUNT; i++) {
         page_created[i] = false;
         pages[i] = lv_obj_create(screen);
@@ -1100,7 +1080,7 @@ void lv_mainstart(void)
         lv_obj_add_flag(pages[i], LV_OBJ_FLAG_HIDDEN);
     }
 
-    /* Dock 栏  高36px */
+    /* Dock 36px */
     lv_obj_t *dock_wrap = lv_obj_create(screen);
     lv_obj_set_size(dock_wrap, lv_pct(100), 36);
     lv_obj_align(dock_wrap, LV_ALIGN_BOTTOM_MID, 0, -2);
@@ -1162,11 +1142,9 @@ void lv_mainstart(void)
     show_page(0);
 }
 
-/* =====================================================================
- * 硬件接口占位
- * ===================================================================== */
 
-/* PPT 接口（注释掉）
+
+/* PPT
 void hw_ppt_get_page_info(uint16_t *current, uint16_t *total) {
     if(current) *current = ppt_current_page;
     if(total)   *total   = ppt_total_pages;
