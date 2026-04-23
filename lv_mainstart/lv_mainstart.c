@@ -208,7 +208,7 @@ static void create_home_page(lv_obj_t *parent)
 
     lv_obj_t *name_box = lv_obj_create(avatar_card);
     lv_obj_set_size(name_box, 94, 24);
-    lv_obj_align(name_box, LV_ALIGN_BOTTOM_MID, 0, -4);
+    lv_obj_align(name_box, LV_ALIGN_BOTTOM_MID, 0, -30);
     lv_obj_set_style_bg_color(name_box, COLOR_WHITE, 0);
     lv_obj_set_style_bg_opa(name_box, LV_OPA_20, 0);
     lv_obj_set_style_border_color(name_box, COLOR_WHITE, 0);
@@ -218,13 +218,30 @@ static void create_home_page(lv_obj_t *parent)
     lv_obj_set_style_pad_all(name_box, 0, 0);
     lv_obj_set_scrollbar_mode(name_box, LV_SCROLLBAR_MODE_OFF);
 
+    lv_obj_t *name_box2 = lv_obj_create(avatar_card);
+    lv_obj_set_size(name_box2, 94, 24);
+    lv_obj_align(name_box2, LV_ALIGN_BOTTOM_MID, 0, 0);
+    lv_obj_set_style_bg_color(name_box2, COLOR_WHITE, 0);
+    lv_obj_set_style_bg_opa(name_box2, LV_OPA_20, 0);
+    lv_obj_set_style_border_color(name_box2, COLOR_WHITE, 0);
+    lv_obj_set_style_border_width(name_box2, 1, 0);
+    lv_obj_set_style_border_opa(name_box2, LV_OPA_40, 0);
+    lv_obj_set_style_radius(name_box2, 6, 0);
+    lv_obj_set_style_pad_all(name_box2, 0, 0);
+    lv_obj_set_scrollbar_mode(name_box2, LV_SCROLLBAR_MODE_OFF);
+
     lv_obj_t *name_lbl1 = lv_label_create(name_box);
     lv_label_set_text(name_lbl1, usr_name);
     lv_obj_set_style_text_font(name_lbl1, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(name_lbl1, COLOR_WHITE, 0);
     lv_obj_center(name_lbl1);
 
-    /* ---- ʱ�俨Ƭ�����ϣ�---- */
+    lv_obj_t *id_lbl = lv_label_create(name_box2);
+    lv_label_set_text(id_lbl, "ID: " THIS_DEVICE_USER_ID);
+    lv_obj_set_style_text_font(id_lbl, &lv_font_montserrat_12, -3);
+    lv_obj_set_style_text_color(id_lbl, lv_color_hex(0xAAAAAA), 0);
+    lv_obj_align_to(id_lbl, name_lbl1, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+
     lv_obj_t *info_card = create_glass_card(parent, 175, 68);
     lv_obj_align(info_card, LV_ALIGN_TOP_RIGHT, -6, 6);
 

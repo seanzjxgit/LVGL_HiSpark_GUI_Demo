@@ -14,7 +14,8 @@ void lv_mainstart(void);
 
 #define POSITION_HOME_NUM   4
 #define MESSAGE_MEETING_NUM 5
-
+/* 本机用户ID（和 nfc_checkin.h 里保持一致）*/
+#define THIS_DEVICE_USER_ID   "000001"
 
 extern char     *usr_name;
 extern char     *home_time;
